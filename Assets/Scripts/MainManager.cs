@@ -11,17 +11,25 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
+    private string m_PlayerName = string.Empty;
     private int m_Points;
-    
+    private int m_BestPoints;
+
     private bool m_GameOver = false;
 
     
     // Start is called before the first frame update
     void Start()
     {
+        print("uno");
+        m_PlayerName = DataManager.Instance.PlayerName;
+        m_BestPoints = DataManager.Instance.PlayerBestScore;
+        BestScoreText.text = $"BestScore : " + m_PlayerName + " : " + m_BestPoints.ToString();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -42,6 +50,10 @@ public class MainManager : MonoBehaviour
     {
         if (!m_Started)
         {
+            print("tre");
+            m_PlayerName = DataManager.Instance.PlayerName;
+            m_BestPoints = DataManager.Instance.PlayerBestScore;
+            BestScoreText.text = $"BestScore : " + m_PlayerName + " : " + m_BestPoints.ToString();
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 m_Started = true;
@@ -55,6 +67,10 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            print("due");
+            DataManager.Instance.PlayerName = m_PlayerName;
+            DataManager.Instance.PlayerBestScore = m_BestPoints;
+            DataManager.Instance.SavePlayerData();
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -66,6 +82,8 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        if(m_BestPoints < m_Points) m_BestPoints = m_Points;
+        BestScoreText.text = $"BestScore : " + m_PlayerName + " : " + m_BestPoints.ToString();
     }
 
     public void GameOver()
